@@ -1,0 +1,8 @@
+1|customer|C_CUSTKEY
+2|lineitem|L_ORDERKEY,L_LINENUMBER
+3|nation|N_NATIONKEY
+4|orders|O_ORDERKEY
+5|part|P_PARTKEY
+6|partsupp|PS_PARTKEY,PS_SUPPKEY
+7|region|R_REGIONKEY
+8|supplier|S_SUPPKEY
