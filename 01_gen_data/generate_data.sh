@@ -31,13 +31,10 @@ if [ "$PARALLEL" -eq "1" ]; then
 fi
 
 cd $PWD
-if [ "$CHILD" -eq "1" ]; then
-	$PWD/dbgen -s $GEN_DATA_SCALE -C $PARALLEL -S $CHILD -v
-else
-	$PWD/dbgen -s $GEN_DATA_SCALE -C $PARALLEL -S $CHILD -T p -v
-	$PWD/dbgen -s $GEN_DATA_SCALE -C $PARALLEL -S $CHILD -T c -v
-	$PWD/dbgen -s $GEN_DATA_SCALE -C $PARALLEL -S $CHILD -T s -v
-	$PWD/dbgen -s $GEN_DATA_SCALE -C $PARALLEL -S $CHILD -T o -v
+$PWD/dbgen -s $GEN_DATA_SCALE -C $PARALLEL -S $CHILD -v
+if [ "$CHILD" -gt "1" ]; then
+	rm -f $DATA_DIRECTORY/nation.tbl
+	rm -f $DATA_DIRECTORY/region.tbl
 	touch $DATA_DIRECTORY/nation.tbl
 	touch $DATA_DIRECTORY/region.tbl
 fi
