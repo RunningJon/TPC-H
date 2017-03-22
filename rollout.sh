@@ -1,102 +1,96 @@
 #!/bin/bash
+
 set -e
-source ../functions.sh
-DEMO=tpch
-HOSTNAME=`hostname`
-DATA_DIR=$1
-DEMO_DIR=$2
-GPFDIST_PORT=$3
-
 PWD=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $PWD/functions.sh
+source_bashrc
 
-echo ""
-echo "############################################################################"
-echo "Demo Configuration"
-echo "############################################################################"
-echo "DATA_DIR: $DATA_DIR"
-echo "DEMO_DIR: $DEMO_DIR"
-echo "GPFDIST_PORT: $GPFDIST_PORT"
+GEN_DATA_SCALE="$1"
+EXPLAIN_ANALYZE="$2"
+SQL_VERSION="$3"
+RANDOM_DISTRIBUTION="$4"
+MULTI_USER_COUNT="$5"
+RUN_COMPILE_TPCH="$6"
+RUN_GEN_DATA="$7"
+RUN_INIT="$8"
+RUN_DDL="$9"
+RUN_LOAD="${10}"
+RUN_SQL="${11}"
+RUN_SINGLE_USER_REPORT="${12}"
+RUN_MULTI_USER="${13}"
+RUN_MULTI_USER_REPORT="${14}"
+SINGLE_USER_ITERATIONS="${15}"
 
-if [ "$GPFDIST_PORT" == "" ]; then
-	echo "Error: Unable to determine parameters for this script!"
+if [[ "$GEN_DATA_SCALE" == "" || "$EXPLAIN_ANALYZE" == "" || "$SQL_VERSION" == "" || "$RANDOM_DISTRIBUTION" == "" || "$MULTI_USER_COUNT" == "" || "$RUN_COMPILE_TPCH" == "" || "$RUN_GEN_DATA" == "" || "$RUN_INIT" == "" || "$RUN_DDL" == "" || "$RUN_LOAD" == "" || "$RUN_SQL" == "" || "$RUN_SINGLE_USER_REPORT" == "" || "$RUN_MULTI_USER" == "" || "$RUN_MULTI_USER_REPORT" == "" || "$SINGLE_USER_ITERATIONS" == "" ]]; then
+	echo "You must provide the scale as a parameter in terms of Gigabytes, true/false to run queries with EXPLAIN ANALYZE option, the SQL_VERSION, and true/false to use random distrbution."
+	echo "Example: ./rollout.sh 100 false tpch false 5 true true true true true true true true true 1"
+	echo "This will create 100 GB of data for this test, not run EXPLAIN ANALYZE, use standard TPC-H, and not use random distribution."
+	echo "The next nine run options indicate if you want to force the running of those steps even if the step has already completed."
 	exit 1
 fi
 
-#compile dbgen if needed
-if [[ ! -f $PWD/dbgen || ! -f $PWD/qgen || ! -f $PWD/dists.dss ]]; then
-	cd "$PWD/tpch_2_17_0/dbgen"
-	make
-	pwd
-	cp dbgen ../../
-	cp qgen ../../
-	cp dists.dss ../../
-	cd ../../
+QUIET=$5
+
+create_directories()
+{
+	if [ ! -d $LOCAL_PWD/log ]; then
+		echo "Creating log directory"
+		mkdir $LOCAL_PWD/log
+	fi
+}
+
+create_directories
+echo "############################################################################"
+echo "TPC-H Script for Pivotal Greenplum Database and Pivotal HAWQ."
+echo "############################################################################"
+echo ""
+echo "############################################################################"
+echo "GEN_DATA_SCALE: $GEN_DATA_SCALE"
+echo "EXPLAIN_ANALYZE: $EXPLAIN_ANALYZE"
+echo "SQL_VERSION: $SQL_VERSION"
+echo "RANDOM_DISTRIBUTION: $RANDOM_DISTRIBUTION"
+echo "MULTI_USER_COUNT: $MULTI_USER_COUNT"
+echo "RUN_COMPILE_TPCH: $RUN_COMPILE_TPCH"
+echo "RUN_GEN_DATA: $RUN_GEN_DATA"
+echo "RUN_INIT: $RUN_INIT"
+echo "RUN_DDL: $RUN_DDL"
+echo "RUN_LOAD: $RUN_LOAD"
+echo "RUN_SQL: $RUN_SQL"
+echo "SINGLE_USER_ITERATIONS: $SINGLE_USER_ITERATIONS"
+echo "RUN_SINGLE_USER_REPORT: $RUN_SINGLE_USER_REPORT"
+echo "RUN_MULTI_USER: $RUN_MULTI_USER"
+echo "RUN_MULTI_USER_REPORT: $RUN_MULTI_USER_REPORT"
+echo "############################################################################"
+echo ""
+if [ "$RUN_COMPILE_TPCH" == "true" ]; then
+	rm -f $PWD/log/end_compile_tpch.log
+fi
+if [ "$RUN_GEN_DATA" == "true" ]; then
+	rm -f $PWD/log/end_gen_data.log
+fi
+if [ "$RUN_INIT" == "true" ]; then
+	rm -f $PWD/log/end_init.log
+fi
+if [ "$RUN_DDL" == "true" ]; then
+	rm -f $PWD/log/end_ddl.log
+fi
+if [ "$RUN_LOAD" == "true" ]; then
+	rm -f $PWD/log/end_load.log
+fi
+if [ "$RUN_SQL" == "true" ]; then
+	rm -f $PWD/log/end_sql.log
+fi
+if [ "$RUN_SINGLE_USER_REPORT" == "true" ]; then
+	rm -f $PWD/log/end_single_user_reports.log
+fi
+if [ "$RUN_MULTI_USER" == "true" ]; then
+	rm -f $PWD/log/end_testing_*.log
+fi
+if [ "$RUN_MULTI_USER_REPORT" == "true" ]; then
+	rm -f $PWD/log/end_multi_user_reports.log
 fi
 
-#use dbgen to generate the data if needed
-count=`ls /$DATA_DIR/$DEMO_DIR/data/*.tbl 2> /dev/null | wc -l`
-if [ "$count" -ne "8" ]; then
-	rm -f /$DATA_DIR/$DEMO_DIR/data/*.tbl
-	./dbgen -vf -s 1
-	mv *.tbl /$DATA_DIR/$DEMO_DIR/data/
-fi
-
-echo ""
-echo "############################################################################"
-echo "This is a demonstration of the performance and SQL compliance of Pivotal"
-echo "HAWQ using the TPC-H benchmark. The size of the benchmark is 1GB which was"
-echo "chosen to work on a single node VM.  Also, the tables are stored in the"
-echo "parquet format using snappy compression." 
-echo "The TPC-H benchmark has defined queries with parameters that should be"
-echo "chosen at random.  To simplify this demo, the \"query validation\""
-echo "parameters were used for all queries instead of picking a value at random."
-echo "Steps:"
-echo "1. Create a \"reports\" schema in HAWQ to store execution times"
-echo "2. Load 1GB of TPC-H data into HAWQ"
-echo "3. Create and load tables into HAWQ"
-echo "4. Execute TPC-H SELECT statements with HAWQ"
-echo "5. Capture performance metrics for each step with the grand total"
-echo "############################################################################"
-echo ""
-read -p "Hit enter to continue..."
-echo ""
-source_bashrc
-set_psqlrc
-start_gpfdist
-create_reports_schema "$PWD"
-remove_old_log "$PWD"
-
-echo "############################################################################"
-echo "HAWQ Begin"
-echo "############################################################################"
-#HAWQ Tables
-for i in $( ls *.hawq.sql ); do
-	table_name=`echo $i | awk -F '.' ' { print $2 "." $3 } '`
-	file_name=`echo $i | awk -F '.' ' { print $3 } '`
-	echo $i
-	#begin time
-	T="$(date +%s%N)"
-
-	LOCATION="'gpfdist://$HOSTNAME:$GPFDIST_PORT/$file_name.tbl'"
-	psql -a -P pager=off -f $i -v LOCATION=$LOCATION
-	echo ""
-
-	log
+for i in $(ls -d $PWD/0*); do
+	echo "$i/rollout.sh"
+	$i/rollout.sh $GEN_DATA_SCALE $EXPLAIN_ANALYZE $SQL_VERSION $RANDOM_DISTRIBUTION $MULTI_USER_COUNT $SINGLE_USER_ITERATIONS
 done
-echo ""
-echo "############################################################################"
-echo "Completed HAWQ"
-echo "############################################################################"
-echo ""
-stop_gpfdist
-echo "############################################################################"
-echo "Results"
-echo "############################################################################"
-echo ""
-psql -P pager=off -f report.sql
-echo ""
-echo "############################################################################"
-echo "Notice the Average Load Time, Average Query Time, and Total Time."
-echo "Next, explore the scripts from this demo to better understand how this demo"
-echo "was implemented: $PWD"
-echo "############################################################################"
