@@ -19,7 +19,7 @@ select
 from
 	lineitem
 where
-	l_shipdate <= date '1998-12-01' - interval ':1 days'
+	l_shipdate <= date '1998-12-01' - interval '90 days'
 group by
 	l_returnflag,
 	l_linestatus

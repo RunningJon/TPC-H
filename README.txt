@@ -108,3 +108,7 @@ TPC-H Minor Modifications
 ########################################################################################
 1. Query alternative 15 was used in favor of the original so it is easier to parse in
 these scripts.  Performance is essentially the same for both versions.
+2. Query 1 documentation doesn't match query provided by TPC.  Range is supposed to be
+dynamically set between 60 and 120 days and substitution doesn't seem to be working
+with qgen.  So, hard code 90 days until this can be fixed by TPC.
+
