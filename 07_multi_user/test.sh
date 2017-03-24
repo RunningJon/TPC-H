@@ -30,10 +30,9 @@ if [ "$SQL_VERSION" == "tpch" ]; then
 
 	for order in $(seq 1 22); do
 		query_id=$((query_id+1))
-		query_number=$(grep begin $sql_dir/multi.sql | head -n"$order" | tail -n1 | awk -F ' ' '{print $2}')
-		q=$(printf %02d $order)
-		start_position=$(grep -n "begin q""$q" $sql_dir/multi.sql | awk -F ':' '{print $1}')
-		end_position=$(grep -n "end q""$q" $sql_dir/multi.sql | awk -F ':' '{print $1}')
+		query_number=$(grep begin $sql_dir/multi.sql | head -n"$order" | tail -n1 | awk -F ' ' '{print $2}' | awk -F 'q' '{print $2}')
+		start_position=$(grep -n "begin q""$query_number" $sql_dir/multi.sql | awk -F ':' '{print $1}')
+		end_position=$(grep -n "end q""$query_number" $sql_dir/multi.sql | awk -F ':' '{print $1}')
 		target_filename="$query_id"".query.""$query_number"".sql"
 		#add explain analyze 
 		echo "echo \":EXPLAIN_ANALYZE\" > $sql_dir/$target_filename"
