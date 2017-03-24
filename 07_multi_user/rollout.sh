@@ -55,8 +55,8 @@ if [ "$file_count" -ne "$MULTI_USER_COUNT" ]; then
 			fi
 			echo "rm -f $sql_dir/*.sql"
 			rm -f $sql_dir/*.sql
-			echo "./qgen -p $MULTI_USER_COUNT -c -v > $sql_dir/multi.sql"
-			./qgen -p $MULTI_USER_COUNT -c -v > $sql_dir/multi.sql
+			echo "./qgen -p $i -c -v > $sql_dir/multi.sql"
+			./qgen -p $i -c -v > $sql_dir/multi.sql
 		done
 		cd ..
 	else
