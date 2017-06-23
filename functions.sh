@@ -1,6 +1,17 @@
 #!/bin/bash
 set -e
 
+count=$(alias | grep -w grep | wc -l)
+if [ "$count" -gt "0" ]; then
+        unalias grep
+fi
+count=$(alias | grep -w ls | wc -l)
+if [ "$count" -gt "0" ]; then
+        unalias ls
+fi
+
+export LD_PRELOAD=/lib64/libz.so.1 ps
+
 LOCAL_PWD=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 OSVERSION=$(uname)
 ADMIN_USER=$(whoami)
