@@ -18,8 +18,6 @@ else
 	exit 1
 fi
 
-00.postgresql.tcph_reports.sql 
-
 for i in $(ls $PWD/*.$filter.*.sql); do
 	echo "psql -a -f $i"
 	psql -a -f $i
