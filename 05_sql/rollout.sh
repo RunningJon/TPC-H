@@ -7,15 +7,13 @@ source_bashrc
 
 GEN_DATA_SCALE=$1
 EXPLAIN_ANALYZE=$2
-SQL_VERSION=$3
-RANDOM_DISTRIBUTION=$4
-MULTI_USER_COUNT=$5
-SINGLE_USER_ITERATIONS=$6
+RANDOM_DISTRIBUTION=$3
+MULTI_USER_COUNT=$4
+SINGLE_USER_ITERATIONS=$5
 
-if [[ "$GEN_DATA_SCALE" == "" || "$EXPLAIN_ANALYZE" == "" || "$SQL_VERSION" == "" || "$RANDOM_DISTRIBUTION" == "" || "$MULTI_USER_COUNT" == "" || "$SINGLE_USER_ITERATIONS" == "" ]]; then
-	echo "You must provide the scale as a parameter in terms of Gigabytes, true/false to run queries with EXPLAIN ANALYZE option, the SQL_VERSION, and true/false to use random distrbution."
+if [[ "$GEN_DATA_SCALE" == "" || "$EXPLAIN_ANALYZE" == "" || "$RANDOM_DISTRIBUTION" == "" || "$MULTI_USER_COUNT" == "" || "$SINGLE_USER_ITERATIONS" == "" ]]; then
+	echo "You must provide the scale as a parameter in terms of Gigabytes, true/false to run queries with EXPLAIN ANALYZE option, true/false to use random distrbution, multi-user count, and the number of sql iterations."
 	echo "Example: ./rollout.sh 100 false tpch false 5 1"
-	echo "This will create 100 GB of data for this test, not run EXPLAIN ANALYZE, use standard TPC-DS, not use random distribution and use 5 sessions for the multi-user test."
 	exit 1
 fi
 
@@ -23,7 +21,7 @@ step=sql
 init_log $step
 
 rm -f $PWD/../log/*single.explain_analyze.log
-for i in $(ls $PWD/*.$SQL_VERSION.*.sql); do
+for i in $(ls $PWD/*.tpch.*.sql); do
 	for x in $(seq 1 $SINGLE_USER_ITERATIONS); do
 		id=`echo $i | awk -F '.' '{print $1}'`
 		schema_name=`echo $i | awk -F '.' '{print $2}'`

@@ -8,12 +8,21 @@ step=single_user_reports
 
 init_log $step
 
-for i in $(ls $PWD/*.sql | grep -v report.sql); do
-	table_name=`echo $i | awk -F '.' '{print $3}'`
-	EXECUTE="'cat $PWD/../log/rollout_$table_name.log'"
+get_version
+if [ "$VERSION" == *"gpdb"* ]; then
+	filter="gpdb"
+elif [ "$VERSION" == "postgresql" ]; then
+	filter="postgresql"
+else
+	echo "ERROR: Unsupported VERSION!"
+	exit 1
+fi
 
-	echo "psql -v ON_ERROR_STOP=ON -a -f $i -v EXECUTE=\"$EXECUTE\""
-	psql -v ON_ERROR_STOP=ON -a -f $i -v EXECUTE="$EXECUTE"
+00.postgresql.tcph_reports.sql 
+
+for i in $(ls $PWD/*.$filter.*.sql); do
+	echo "psql -a -f $i"
+	psql -a -f $i
 	echo ""
 done
 

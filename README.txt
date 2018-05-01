@@ -1,9 +1,10 @@
 ########################################################################################
-TPC-H benchmark scripts for HAWQ and Greenplum database.
+TPC-H benchmark scripts for Greenplum and PostgreSQL databases.
 ########################################################################################
 Supported versions:
-Greenplum 4.2, 4.3, 5.0
-HAWQ 1.3, 2.0, 2.1, 2.2
+Greenplum 4.3, 5.*, 6.*
+Open Source Greenplum 5.*, 6.*
+Beta: PostgreSQL 9.*
 
 ########################################################################################
 TPC-H Information
@@ -13,9 +14,6 @@ Based on version 2.17.1 of TPC-H.
 ########################################################################################
 Query Options
 ########################################################################################
-- Initial version only supports the standard, TPC-H queries.
-SQL_VERSION="tpch"
-
 You can have the queries execute with "EXPLAIN ANALYZE" in order to see exactly the 
 query plan used, the cost, the memory used, etc.  This is done in tpch_variables.sh
 like this:
@@ -32,7 +30,7 @@ Table storage is defined in functions.sh and is configured for optimal performan
 ########################################################################################
 Prerequisites
 ########################################################################################
-1. Greenplum Database or Pivotal HDB (Apache HAWQ) installed and running
+1. Supported Database installed and running
 2. Connectivity is possible to the MASTER_HOST and from the Data Nodes / Segment Hosts
 3. Root access
 
@@ -57,37 +55,6 @@ Also by default, TPC-H files are generated on each Segment Host / Data Node in t
 Segement's PGDATA/pivotalguru directory.  If there isn't enough space in this directory
 in each Segment, you can create a symbolic link to a drive location that does have 
 enough space.
-
-########################################################################################
-HAWQ 2.x
-########################################################################################
-For HAWQ 2.x, this directory is named PGDATA/pivotalguru_$i where $i is 1 to 
-the GUC hawq_rm_nvseg_perquery_perseg_limit.  See notes below for more information. 
-Example creating links with PGDATA = /data1/segment
-with gpssh as root:
-for i in $(seq 1 8); do mkdir /data$i/pivotalguru; done
-chown gpadmin:gpadmin /data*/pivotalguru
-for i in $(seq 1 8); do ln -s /data$i/pivotalguru /data/hawq/segment/pivotalguru_$i; done
-
-The above is only for HAWQ 2.0.  For GPDB and HAWQ 1.3, the segment directory structure
-is different.
-
-########################################################################################
-Ambari installation
-########################################################################################
-If Ambari is used to manage the cluster, you will need to add the following changes to
-"Custom hawq-site.xml":
-optimizer_analyze_root_partition [on]
-optimizer [on]
-
-Change:
-VM Overcommit Ratio [100]
-Segment Memory Usage Limit [200] (based on the availability of RAM)
-hawq_rm_stmt_vseg_memory [16gb] (based on the availability of RAM)
-gp_autostats_mode [none]
-
-Refer to Pivotal HDB documentation on how to set the Segment Memory Usage, VM Overcommit
-Ratio, and Statement Memory settings.
 
 ########################################################################################
 Execution

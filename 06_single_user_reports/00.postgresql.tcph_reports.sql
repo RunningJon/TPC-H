@@ -1,0 +1,2 @@
+DROP SCHEMA IF EXISTS tpch_reports CASCADE;
+CREATE SCHEMA tpch_reports;
