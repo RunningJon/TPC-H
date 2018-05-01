@@ -1,1 +1,1 @@
-COPY reports.load FROM $PWD/../log/rollout_load.log WITH (DELIMITER '|');
+COPY tpch_reports.load FROM :LOGFILE WITH DELIMITER '|';

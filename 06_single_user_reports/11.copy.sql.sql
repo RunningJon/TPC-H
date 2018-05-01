@@ -1,1 +1,1 @@
-COPY reports.sql FROM $PWD/../log/rollout_sql.log WITH (DELIMITER '|');
+COPY tpch_reports.sql FROM :LOGFILE WITH DELIMITER '|';
