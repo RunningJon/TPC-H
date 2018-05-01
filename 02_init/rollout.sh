@@ -99,7 +99,7 @@ set_psqlrc()
 }
 
 get_version
-if [ "$VERSION" == *"gpdb"* ]; then
+if [[ "$VERSION" == *"gpdb"* ]]; then
 	set_segment_bashrc
 	check_gucs
 	copy_config

@@ -23,7 +23,7 @@ fi
 ADMIN_HOME=$(eval echo ~$ADMIN_USER)
 
 get_version
-if [ "$VERSION" == *"gpdb"* ]; then
+if [[ "$VERSION" == *"gpdb"* ]]; then
 	filter="gpdb"
 elif [ "$VERSION" == "postgresql" ]; then
 	filter="postgresql"
@@ -63,7 +63,7 @@ start_gpfdist()
 	done
 }
 
-if [ "$VERSION" == *"gpdb"* ]; then
+if [[ "$VERSION" == *"gpdb"* ]]; then
 	copy_script
 	start_gpfdist
 
@@ -102,7 +102,7 @@ else
 	done
 fi
 
-if [ "$VERSION" == *"gpdb"* ]; then
+if [[ "$VERSION" == *"gpdb"* ]]; then
 	stop_gpfdist
 
 	#Analyze schema using analyzedb

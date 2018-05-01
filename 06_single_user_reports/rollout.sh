@@ -9,7 +9,7 @@ step=single_user_reports
 init_log $step
 
 get_version
-if [ "$VERSION" == *"gpdb"* ]; then
+if [[ "$VERSION" == *"gpdb"* ]]; then
 	filter="gpdb"
 elif [ "$VERSION" == "postgresql" ]; then
 	filter="postgresql"

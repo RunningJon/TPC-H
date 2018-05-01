@@ -38,7 +38,7 @@ copy_generate_data()
 gen_data()
 {
 	get_version
-	if [ "$VERSION" == *"gpdb"* ]; then
+	if [[ "$VERSION" == *"gpdb"* ]]; then
 		PARALLEL=$(gpstate | grep "Total primary segments" | awk -F '=' '{print $2}')
 		if [ "$PARALLEL" == "" ]; then
 			echo "ERROR: Unable to determine how many primary segments are in the cluster using gpstate."
@@ -93,7 +93,6 @@ table_name="gen_data"
 
 kill_orphaned_data_gen
 copy_generate_data
-create_table_data_dir
 gen_data
 
 echo ""
