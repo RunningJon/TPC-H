@@ -8,15 +8,32 @@ step="multi_user_reports"
 
 init_log $step
 
-for i in $(ls $PWD/*.sql | grep -v report.sql); do
-        schema_name=`echo $i | awk -F '.' '{print $2}'`
-	EXECUTE="'cat $PWD/../log/rollout_$schema_name*.log'"
-        echo "psql -v ON_ERROR_STOP=ON -a -f $i -v EXECUTE=\"$EXECUTE\""
-        psql -v ON_ERROR_STOP=ON -a -f $i -v EXECUTE="$EXECUTE"
-        echo ""
+get_version
+if [[ "$VERSION" == *"gpdb"* ]]; then
+	filter="gpdb"
+elif [ "$VERSION" == "postgresql" ]; then
+	filter="postgresql"
+else
+	echo "ERROR: Unsupported VERSION!"
+	exit 1
+fi
+
+for i in $(ls $PWD/*.$filter.*.sql); do
+	echo "psql -a -f $i"
+	psql -a -f $i
+	echo ""
 done
 
-psql -F $'\t' -A -v ON_ERROR_STOP=ON -P pager=off -f $PWD/detailed_report.sql
+for i in $(ls $PWD/*.copy.*.sql); do
+	logstep=$(echo $i | awk -F 'copy.' '{print $2}' | awk -F '.' '{print $1}')
+	logfile="$PWD""/../log/rollout_""$logstep"".log"
+	logfile="'""$logfile""'"
+	echo "psql -a -f $i -v LOGFILE=\"$logfile\""
+	psql -a -f $i -v LOGFILE="$logfile"
+	echo ""
+done
+
+psql -F $'\t' -A -P pager=off -f $PWD/detailed_report.sql
 echo ""
 
 end_step $step

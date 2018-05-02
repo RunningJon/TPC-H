@@ -24,7 +24,6 @@ for i in $(ls $PWD/*.$filter.*.sql); do
 	echo ""
 done
 
-PWD="$PWD"
 for i in $(ls $PWD/*.copy.*.sql); do
 	logstep=$(echo $i | awk -F 'copy.' '{print $2}' | awk -F '.' '{print $1}')
 	logfile="$PWD""/../log/rollout_""$logstep"".log"
