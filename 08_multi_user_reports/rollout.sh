@@ -33,6 +33,8 @@ for i in $(ls $PWD/*.copy.*.sql); do
 	echo ""
 done
 
+psql -t -A -c "select 'analyze ' || n.nspname || '.' || c.relname || ';' from pg_class c join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'tpch_testing'" | psql -t -A -e
+
 psql -F $'\t' -A -P pager=off -f $PWD/detailed_report.sql
 echo ""
 
