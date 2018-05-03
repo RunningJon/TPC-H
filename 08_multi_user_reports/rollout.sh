@@ -24,7 +24,7 @@ for i in $(ls $PWD/*.$filter.*.sql); do
 	echo ""
 done
 
-filename=$(ls *.copy.*.sql)
+filename=$(ls $PWD/*.copy.*.sql)
 
 for i in $(ls $PWD/../log/rollout_testing_*); do
 	logfile="'""$i""'"
