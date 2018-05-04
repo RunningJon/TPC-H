@@ -15,4 +15,5 @@ L_RECEIPTDATE DATE,
 L_SHIPINSTRUCT CHAR(25),
 L_SHIPMODE CHAR(10),
 L_COMMENT VARCHAR(44),
-dummy text)
+dummy text);
+ALTER TABLE tpch.lineitem ADD PRIMARY KEY (l_orderkey, l_linenumber);

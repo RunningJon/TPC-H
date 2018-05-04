@@ -4,4 +4,5 @@ PS_SUPPKEY INT,
 PS_AVAILQTY INTEGER,
 PS_SUPPLYCOST DECIMAL(15,2),
 PS_COMMENT VARCHAR(199),
-dummy text)
+dummy text);
+ALTER TABLE tpch.partsupp ADD PRIMARY KEY (ps_partkey, ps_suppkey);

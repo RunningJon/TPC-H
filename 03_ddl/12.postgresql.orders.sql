@@ -8,4 +8,5 @@ O_ORDERPRIORITY CHAR(15),
 O_CLERK  CHAR(15), 
 O_SHIPPRIORITY INTEGER,
 O_COMMENT VARCHAR(79),
-dummy text)
+dummy text);
+ALTER TABLE tpch.orders ADD PRIMARY KEY (o_orderkey);

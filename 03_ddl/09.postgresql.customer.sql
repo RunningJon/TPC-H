@@ -7,4 +7,5 @@ C_PHONE CHAR(15),
 C_ACCTBAL DECIMAL(15,2),
 C_MKTSEGMENT CHAR(10),
 C_COMMENT VARCHAR(117),
-dummy text)
+dummy text);
+ALTER TABLE tpch.customer ADD PRIMARY KEY (c_custkey);

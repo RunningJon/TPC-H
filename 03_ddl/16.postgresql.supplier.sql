@@ -6,4 +6,5 @@ S_NATIONKEY INTEGER,
 S_PHONE CHAR(15),
 S_ACCTBAL DECIMAL(15,2),
 S_COMMENT VARCHAR(101),
-dummy text)
+dummy text);
+ALTER TABLE tpch.supplier ADD PRIMARY KEY (s_suppkey);

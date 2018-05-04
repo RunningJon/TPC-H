@@ -8,4 +8,5 @@ P_SIZE INTEGER,
 P_CONTAINER CHAR(10),
 P_RETAILPRICE DECIMAL(15,2),
 P_COMMENT VARCHAR(23),
-dummy text)
+dummy text);
+ALTER TABLE tpch.part ADD PRIMARY KEY (p_partkey);
