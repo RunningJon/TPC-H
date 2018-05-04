@@ -97,7 +97,8 @@ set_psqlrc()
 		echo "mv ~/.psqlrc ~/.psqlrc.backup"
 		mv ~/.psqlrc ~/.psqlrc.backup
 	fi
-	psql -q -A -t -c "set search_path=tpch,public;"
+	echo "psql -q -A -t -c \"ALTER USER $USER SET search_path=tpch,public;\""
+	psql -q -A -t -c "ALTER USER $USER SET search_path=tpch,public;"
 }
 
 get_version
