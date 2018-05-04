@@ -109,12 +109,12 @@ fi
 
 if [[ "$VERSION" == *"gpdb"* ]]; then
 	stop_gpfdist
+fi
 
-	#Analyze schema using analyzedb
+max_id=$(ls $PWD/*.sql | tail -1)
+i=$(basename $max_id | awk -F '.' '{print $1}')
 
-	max_id=$(ls $PWD/*.sql | tail -1)
-	i=$(basename $max_id | awk -F '.' '{print $1}')
-
+if [[ "$VERSION" == *"gpdb"* ]]; then
 	dbname="$PGDATABASE"
 	if [ "$dbname" == "" ]; then
 		dbname="$ADMIN_USER"
@@ -123,16 +123,30 @@ if [[ "$VERSION" == *"gpdb"* ]]; then
 	if [ "$PGPORT" == "" ]; then
 		export PGPORT=5432
 	fi
+fi
 
-	start_log
 
+if [[ "$VERSION" == *"gpdb"* ]]; then
 	schema_name="tpch"
 	table_name="tpch"
 
+	start_log
+	#Analyze schema using analyzedb
 	analyzedb -d $dbname -s tpch --full -a
 
 	tuples="0"
 	log $tuples
+else
+	#postgresql analyze
+	for t in $(psql -q -t -A -c "select n.nspname, c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'tpch'"); do
+		start_log
+		schema_name=$(echo $t | awk -F '|' '{print $1}')
+		table_name=$(echo $t | awk -F '|' '{print $2}')
+		psql -q -t -A -c "ANALZYE 
+		tuples="0"
+		log $tuples
+		i=$((i+1))
+	done
 fi
 
 end_step $step
