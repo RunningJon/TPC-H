@@ -51,9 +51,6 @@ source_bashrc()
 			touch ~/.bashrc
 		fi
 	fi
-	echo "ls -l ~/$startup_file"
-	ls -l ~/$startup_file
-
 	for g in $(grep "greenplum_path.sh" ~/$startup_file | grep -v "\#"); do
 		GREENPLUM_PATH=$g
 	done
@@ -66,7 +63,8 @@ source_bashrc()
 		fi
 	fi
 	echo "source ~/$startup_file"
-	source ~/$startup_file
+	# don't fail if an error is happening in the admin's profile
+	source ~/$startup_file || true
 	echo ""
 }
 init_log()
