@@ -41,12 +41,9 @@ source_bashrc()
 {
 	startup_file=".bashrc"
 	if [ ! -f ~/.bashrc ]; then
-		echo ".bashrc not found.  Trying .bash_profile"
 		if [ -f ~/.bash_profile ]; then
-			echo "startup_file=\".bash_profile\""
 			startup_file=".bash_profile"
 		else
-			echo "unable to find .bash_profile so creating .bashrc file"
 			echo "touch ~/.bashrc"
 			touch ~/.bashrc
 		fi
