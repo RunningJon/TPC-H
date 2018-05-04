@@ -39,6 +39,9 @@ get_version()
 }
 source_bashrc()
 {
+	if [ ! -f "~/.bashrc" ]; then
+		touch ~/.bashrc
+	fi
 	for g in $(grep "greenplum_path.sh" ~/.bashrc | grep -v "\#"); do
 		GREENPLUM_PATH=$g
 	done
