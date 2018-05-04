@@ -90,11 +90,11 @@ else
 	PARALLEL=$(lscpu --parse=cpu | grep -v "#" | wc -l)
 	echo "parallel: $PARALLEL"
 
-	for p in $(seq 1 $PARALLEL); do
-		for i in $(ls $PWD/*.$filter.*.sql); do
-			id=$(echo $i | awk -F '.' '{print $1}')
-			schema_name=$(echo $i | awk -F '.' '{print $2}')
-			table_name=$(echo $i | awk -F '.' '{print $3}')
+	for i in $(ls $PWD/*.$filter.*.sql); do
+		id=$(echo $i | awk -F '.' '{print $1}')
+		schema_name=$(echo $i | awk -F '.' '{print $2}')
+		table_name=$(echo $i | awk -F '.' '{print $3}')
+		for p in $(seq 1 $PARALLEL); do
 			filename=$(echo $PGDATA/pivotalguru_$p/$table_name.tbl.$p)
 			if [ -f $filename ]; then
 				start_log
