@@ -26,7 +26,7 @@ if [[ "$VERSION" == *"gpdb"* ]]; then
 elif [ "$VERSION" == "postgresql" ]; then
 	filter="postgresql"
 else
-	echo "ERROR: Unsupported VERSION $filter!"
+	echo "ERROR: Unsupported VERSION $VERSION!"
 	exit 1
 fi
 
