@@ -215,6 +215,7 @@ repo_init()
 			su -c "cd $INSTALL_DIR; GIT_SSL_NO_VERIFY=true; git clone --depth=1 $REPO_URL" $ADMIN_USER
 		fi
 	else
+		chown -R $ADMIN_USER $INSTALL_DIR/$REPO
 		if [ "$internet_down" -eq "0" ]; then
 			git config --global user.email "$ADMIN_USER@$HOSTNAME"
 			git config --global user.name "$ADMIN_USER"

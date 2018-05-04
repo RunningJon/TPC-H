@@ -19,20 +19,6 @@ ADMIN_HOME=$(eval echo ~$ADMIN_USER)
 GPFDIST_PORT=9000
 MASTER_HOST=$(hostname | awk -F '.' '{print $1}')
 
-source_bashrc()
-{
-	for g in $(grep "greenplum_path.sh" ~/.bashrc | grep -v "\#"); do
-		GREENPLUM_PATH=$g
-	done
-	if [ "$GREENPLUM_PATH" == "" ]; then
-		echo ".bashrc file does not contain greenplum_path.sh"
-		echo "Please update your .bashrc file for $ADMIN_USER and try again."
-		exit 1
-	fi
-	echo "source .bashrc"
-	source ~/.bashrc
-	echo ""
-}
 get_version()
 {
 	#need to call source_bashrc first
@@ -50,6 +36,23 @@ get_version()
 		MEDIUM_STORAGE=""
 		LARGE_STORAGE=""
 	fi
+}
+source_bashrc()
+{
+	for g in $(grep "greenplum_path.sh" ~/.bashrc | grep -v "\#"); do
+		GREENPLUM_PATH=$g
+	done
+	if [ "$GREENPLUM_PATH" == "" ]; then
+		get_version
+		if [[ "$VERSION" == *"gpdb"* || "$VERSION" == *"oss"* ]]; then
+			echo ".bashrc file does not contain greenplum_path.sh"
+			echo "Please update your .bashrc file for $ADMIN_USER and try again."
+			exit 1
+		fi
+	fi
+	echo "source .bashrc"
+	source ~/.bashrc
+	echo ""
 }
 init_log()
 {
