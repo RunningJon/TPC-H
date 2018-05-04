@@ -86,6 +86,23 @@ if [ "$RUN_MULTI_USER_REPORT" == "true" ]; then
 	rm -f $PWD/log/end_multi_user_reports.log
 fi
 
+get_version
+if [[ "$VERSION" == *"gpdb"* || "$VERSION" == "*oss*" ]]; then
+	echo "INFO: ssh keys are exchanged as part of database setup."
+else
+	echo "INFO: Make sure passwordless ssh is allowed."
+	if [ ! -d ~/.ssh ]; then
+		echo "mkdir ~/.ssh"
+		mkdir ~/.ssh
+	fi
+	if [ ! -f ~/.ssh/id_rsa ]; then
+		echo "ssh-keygen -t rsa -N \"\" -f ~/.ssh/id_rsa"
+		ssh-keygen -t rsa -N "" -f ~/.ssh/id_rsa
+		echo "cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys"
+		cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+	fi
+fi
+	
 for i in $(ls -d $PWD/0*); do
 	echo "$i/rollout.sh"
 	$i/rollout.sh $GEN_DATA_SCALE $EXPLAIN_ANALYZE $RANDOM_DISTRIBUTION $MULTI_USER_COUNT $SINGLE_USER_ITERATIONS
