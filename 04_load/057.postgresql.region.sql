@@ -1,1 +1,1 @@
-COPY tpch.region FROM ':filename' WITH DELIMITER '|' NULL '' ESCAPE E'\\';
+COPY tpch.region FROM ':filename' WITH DELIMITER '|' NULL '';

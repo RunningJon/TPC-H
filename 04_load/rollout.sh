@@ -142,7 +142,7 @@ else
 		start_log
 		schema_name=$(echo $t | awk -F '|' '{print $1}')
 		table_name=$(echo $t | awk -F '|' '{print $2}')
-		psql -q -t -A -c "ANALZYE 
+		psql -q -t -A -c "ANALZYE $schema_name.$table_name;"
 		tuples="0"
 		log $tuples
 		i=$((i+1))

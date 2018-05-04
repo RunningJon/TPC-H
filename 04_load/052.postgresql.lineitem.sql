@@ -1,1 +1,1 @@
-COPY tpch.lineitem FROM ':filename' WITH DELIMITER '|' NULL '' ESCAPE E'\\';
+COPY tpch.lineitem FROM ':filename' WITH DELIMITER '|' NULL '';
