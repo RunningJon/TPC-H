@@ -98,6 +98,7 @@ else
 			table_name=$(echo $i | awk -F '.' '{print $3}')
 
 			for filename in $(ls $PGDATA/pivotalguru_$p/$table_name*); do
+				filename="'""$filename""'"
 				echo "psql -f $i -v filename=\"$filename\" | grep INSERT | awk -F ' ' '{print \$3}'"
 				tuples=$(psql -f $i -v filename="$filename" | grep INSERT | awk -F ' ' '{print $3}'; exit ${PIPESTATUS[0]})
 
