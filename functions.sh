@@ -40,14 +40,14 @@ get_version()
 source_bashrc()
 {
 	startup_file=".bashrc"
-	if [ ! -f "~/.bashrc" ]; then
+	if [ ! -f ~/.bashrc ]; then
 		echo ".bashrc not found.  Trying .bash_profile"
-		if [ ! -f "~/.bash_profile" ]; then
+		if [ -f ~/.bash_profile ]; then
+			startup_file=".bash_profile"
+		else
 			echo "unable to find .bash_profile so creating .bashrc file"
 			echo "touch ~/.bashrc"
 			touch ~/.bashrc
-		else
-			startup_file=".bash_profile"
 		fi
 	fi
 	for g in $(grep "greenplum_path.sh" ~/$startup_file | grep -v "\#"); do
