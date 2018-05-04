@@ -35,7 +35,7 @@ check_gucs()
 	update_config="0"
 
 	if [ "$VERSION" == "gpdb_5" ]; then
-		counter=$(psql -t -A -c "show optimizer_join_arity_for_associativity_commutativity" | grep -i "18" | wc -l; exit ${PIPESTATUS[0]})
+		counter=$(psql -q -t -A -c "show optimizer_join_arity_for_associativity_commutativity" | grep -i "18" | wc -l; exit ${PIPESTATUS[0]})
 		if [ "$counter" -eq "0" ]; then
 			echo "setting optimizer_join_arity_for_associativity_commutativity"
 			gpconfig -c optimizer_join_arity_for_associativity_commutativity -v 18 --skipvalidation
@@ -44,7 +44,7 @@ check_gucs()
 	fi
 
 	echo "check optimizer"
-	counter=$(psql -t -A -c "show optimizer" | grep -i "on" | wc -l; exit ${PIPESTATUS[0]})
+	counter=$(psql -q -t -A -c "show optimizer" | grep -i "on" | wc -l; exit ${PIPESTATUS[0]})
 
 	if [ "$counter" -eq "0" ]; then
 		echo "enabling optimizer"
@@ -53,7 +53,7 @@ check_gucs()
 	fi
 
 	echo "check analyze_root_partition"
-	counter=$(psql -t -A -c "show optimizer_analyze_root_partition" | grep -i "on" | wc -l; exit ${PIPESTATUS[0]})
+	counter=$(psql -q -t -A -c "show optimizer_analyze_root_partition" | grep -i "on" | wc -l; exit ${PIPESTATUS[0]})
 	if [ "$counter" -eq "0" ]; then
 		echo "enabling analyze_root_partition"
 		gpconfig -c optimizer_analyze_root_partition -v on --masteronly
@@ -61,7 +61,7 @@ check_gucs()
 	fi
 
 	echo "check gp_autostats_mode"
-	counter=$(psql -t -A -c "show gp_autostats_mode" | grep -i "none" | wc -l; exit ${PIPESTATUS[0]})
+	counter=$(psql -q -t -A -c "show gp_autostats_mode" | grep -i "none" | wc -l; exit ${PIPESTATUS[0]})
 	if [ "$counter" -eq "0" ]; then
 		echo "changing gp_autostats_mode to none"
 		gpconfig -c gp_autostats_mode -v none --masteronly
@@ -69,7 +69,7 @@ check_gucs()
 	fi
 
 	echo "check default_statistics_target"
-	counter=$(psql -t -A -c "show default_statistics_target" | grep "100" | wc -l; exit ${PIPESTATUS[0]})
+	counter=$(psql -q -t -A -c "show default_statistics_target" | grep "100" | wc -l; exit ${PIPESTATUS[0]})
 	if [ "$counter" -eq "0" ]; then
 		echo "changing default_statistics_target to 100"
 		gpconfig -c default_statistics_target -v 100
@@ -93,9 +93,11 @@ copy_config()
 }
 set_psqlrc()
 {
-	echo "set search_path=tpch,public;" > ~/.psqlrc
-	echo "\timing" >> ~/.psqlrc
-	chmod 600 ~/.psqlrc
+	if [ -f ~/.psqlrc ]; then
+		echo "mv ~/.psqlrc ~/.psqlrc.backup"
+		mv ~/.psqlrc ~/.psqlrc.backup
+	fi
+	psql -q -A -t -c "set search_path=tpch,public;"
 }
 
 get_version
