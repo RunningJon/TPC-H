@@ -39,22 +39,30 @@ get_version()
 }
 source_bashrc()
 {
+	startup_file=".bashrc"
 	if [ ! -f "~/.bashrc" ]; then
-		touch ~/.bashrc
+		echo ".bashrc not found.  Trying .bash_profile"
+		if [ ! -f "~/.bash_profile" ]; then
+			echo "unable to find .bash_profile so creating .bashrc file"
+			echo "touch ~/.bashrc"
+			touch ~/.bashrc
+		else
+			startup_file=".bash_profile"
+		fi
 	fi
-	for g in $(grep "greenplum_path.sh" ~/.bashrc | grep -v "\#"); do
+	for g in $(grep "greenplum_path.sh" ~/$startup_file | grep -v "\#"); do
 		GREENPLUM_PATH=$g
 	done
 	if [ "$GREENPLUM_PATH" == "" ]; then
 		get_version
 		if [[ "$VERSION" == *"gpdb"* || "$VERSION" == *"oss"* ]]; then
-			echo ".bashrc file does not contain greenplum_path.sh"
-			echo "Please update your .bashrc file for $ADMIN_USER and try again."
+			echo "$startup_file does not contain greenplum_path.sh"
+			echo "Please update your $startup_file for $ADMIN_USER and try again."
 			exit 1
 		fi
 	fi
-	echo "source .bashrc"
-	source ~/.bashrc
+	echo "source ~/$startup_file"
+	source ~/$startup_file
 	echo ""
 }
 init_log()
