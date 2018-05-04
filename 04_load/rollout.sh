@@ -100,8 +100,8 @@ else
 			if [ -f $filename ]; then
 				start_log
 				filename="'""$filename""'"
-				echo "psql -f $i -v filename=\"$filename\" | grep INSERT | awk -F ' ' '{print \$3}'"
-				tuples=$(psql -f $i -v filename="$filename" | grep INSERT | awk -F ' ' '{print $3}'; exit ${PIPESTATUS[0]})
+				echo "psql -f $i -v filename=\"$filename\" | grep COPY | awk -F ' ' '{print \$2}'"
+				tuples=$(psql -f $i -v filename="$filename" | grep COPY | awk -F ' ' '{print $2}'; exit ${PIPESTATUS[0]})
 				log $tuples
 			fi
 		done
