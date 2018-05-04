@@ -97,7 +97,7 @@ else
 		table_name=$(echo $i | awk -F '.' '{print $3}')
 		for p in $(seq 1 $PARALLEL); do
 			filename=$(echo $PGDATA/pivotalguru_$p/$table_name.tbl*)
-			if [ -f $filename ]; then
+			if [[ -f $filename && -s $filename ]]; then
 				start_log
 				filename="'""$filename""'"
 				echo "psql -f $i -v filename=\"$filename\" | grep COPY | awk -F ' ' '{print \$2}'"
