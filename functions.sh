@@ -51,6 +51,9 @@ source_bashrc()
 			touch ~/.bashrc
 		fi
 	fi
+	echo "ls -l ~/$startup_file"
+	ls -l ~/$startup_file
+
 	for g in $(grep "greenplum_path.sh" ~/$startup_file | grep -v "\#"); do
 		GREENPLUM_PATH=$g
 	done
