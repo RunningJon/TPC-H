@@ -79,6 +79,7 @@ if [[ "$VERSION" == *"gpdb"* ]]; then
 
 		log $tuples
 	done
+	stop_gpfdist
 else
 
 	if [ "$PGDATA" == "" ]; then
@@ -91,25 +92,19 @@ else
 
 	for p in $(seq 1 $PARALLEL); do
 		for i in $(ls $PWD/*.$filter.*.sql); do
-			start_log
-
 			id=$(echo $i | awk -F '.' '{print $1}')
 			schema_name=$(echo $i | awk -F '.' '{print $2}')
 			table_name=$(echo $i | awk -F '.' '{print $3}')
-
-			for filename in $(ls $PGDATA/pivotalguru_$p/$table_name.tbl.*); do
+			filename=$($PGDATA/pivotalguru_$p/$table_name.tbl.$p)
+			if [ -f $filename ]; then
+				start_log
 				filename="'""$filename""'"
 				echo "psql -f $i -v filename=\"$filename\" | grep INSERT | awk -F ' ' '{print \$3}'"
 				tuples=$(psql -f $i -v filename="$filename" | grep INSERT | awk -F ' ' '{print $3}'; exit ${PIPESTATUS[0]})
-
 				log $tuples
-			done
+			fi
 		done
 	done
-fi
-
-if [[ "$VERSION" == *"gpdb"* ]]; then
-	stop_gpfdist
 fi
 
 max_id=$(ls $PWD/*.sql | tail -1)
