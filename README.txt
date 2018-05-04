@@ -4,7 +4,7 @@ TPC-H benchmark scripts for Greenplum and PostgreSQL databases.
 Supported versions:
 Greenplum 4.3, 5.*, 6.*
 Open Source Greenplum 5.*, 6.*
-Beta: PostgreSQL 9.*
+Beta: PostgreSQL 10.*
 
 ########################################################################################
 TPC-H Information
