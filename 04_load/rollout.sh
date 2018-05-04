@@ -135,7 +135,7 @@ if [[ "$VERSION" == *"gpdb"* ]]; then
 	log $tuples
 else
 	#postgresql analyze
-	for t in $(psql -q -t -A -c "select n.nspname, c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'tpch'"); do
+	for t in $(psql -q -t -A -c "select n.nspname, c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'tpch' and c.relkind='r'"); do
 		start_log
 		schema_name=$(echo $t | awk -F '|' '{print $1}')
 		table_name=$(echo $t | awk -F '|' '{print $2}')
