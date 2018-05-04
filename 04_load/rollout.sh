@@ -95,7 +95,7 @@ else
 			id=$(echo $i | awk -F '.' '{print $1}')
 			schema_name=$(echo $i | awk -F '.' '{print $2}')
 			table_name=$(echo $i | awk -F '.' '{print $3}')
-			filename=$($PGDATA/pivotalguru_$p/$table_name.tbl.$p)
+			filename=$(echo $PGDATA/pivotalguru_$p/$table_name.tbl.$p)
 			if [ -f $filename ]; then
 				start_log
 				filename="'""$filename""'"
