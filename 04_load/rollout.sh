@@ -86,18 +86,23 @@ else
 		exit 1
 	fi
 
-	for i in $(ls $PWD/*.$filter.*.sql); do
-		start_log
+	PARALLEL=$(lscpu --parse=cpu | grep -v "#" | wc -l)
+	echo "parallel: $PARALLEL"
 
-		id=$(echo $i | awk -F '.' '{print $1}')
-		schema_name=$(echo $i | awk -F '.' '{print $2}')
-		table_name=$(echo $i | awk -F '.' '{print $3}')
+	for p in $(seq 1 $PARALLEL); do
+		for i in $(ls $PWD/*.$filter.*.sql); do
+			start_log
 
-		for filename in $(ls $PGDATA/pivotalguru/$table_name*); do
-			echo "psql -f $i -v filename=\"$filename\" | grep INSERT | awk -F ' ' '{print \$3}'"
-			tuples=$(psql -f $i -v filename="$filename" | grep INSERT | awk -F ' ' '{print $3}'; exit ${PIPESTATUS[0]})
+			id=$(echo $i | awk -F '.' '{print $1}')
+			schema_name=$(echo $i | awk -F '.' '{print $2}')
+			table_name=$(echo $i | awk -F '.' '{print $3}')
 
-			log $tuples
+			for filename in $(ls $PGDATA/pivotalguru_$p/$table_name*); do
+				echo "psql -f $i -v filename=\"$filename\" | grep INSERT | awk -F ' ' '{print \$3}'"
+				tuples=$(psql -f $i -v filename="$filename" | grep INSERT | awk -F ' ' '{print $3}'; exit ${PIPESTATUS[0]})
+
+				log $tuples
+			done
 		done
 	done
 fi
