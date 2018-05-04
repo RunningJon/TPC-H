@@ -1,1 +1,1 @@
-COPY tpch.partsupp FROM ':filename' WITH DELIMITER '|' NULL '';
+COPY tpch.partsupp FROM :filename WITH DELIMITER '|' NULL '';

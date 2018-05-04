@@ -1,1 +1,1 @@
-COPY tpch.nation FROM ':filename' WITH DELIMITER '|' NULL '';
+COPY tpch.nation FROM :filename WITH DELIMITER '|' NULL '';

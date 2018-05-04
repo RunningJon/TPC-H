@@ -1,1 +1,1 @@
-COPY tpch.supplier FROM ':filename' WITH DELIMITER '|' NULL '';
+COPY tpch.supplier FROM :filename WITH DELIMITER '|' NULL '';

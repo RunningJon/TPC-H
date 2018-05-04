@@ -1,1 +1,1 @@
-COPY tpch.customer FROM ':filename' WITH DELIMITER '|' NULL '';
+COPY tpch.customer FROM :filename WITH DELIMITER '|' NULL '';

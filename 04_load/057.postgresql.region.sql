@@ -1,1 +1,1 @@
-COPY tpch.region FROM ':filename' WITH DELIMITER '|' NULL '';
+COPY tpch.region FROM :filename WITH DELIMITER '|' NULL '';

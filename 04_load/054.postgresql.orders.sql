@@ -1,1 +1,1 @@
-COPY tpch.orders FROM ':filename' WITH DELIMITER '|' NULL '';
+COPY tpch.orders FROM :filename WITH DELIMITER '|' NULL '';
