@@ -30,11 +30,11 @@ else
 	exit 1
 fi
 
-#Create tables 
+#Create tables
 for i in $(ls $PWD/*.$filter.*.sql); do
-	id=`echo $i | awk -F '.' '{print $1}'`
-	schema_name=`echo $i | awk -F '.' '{print $2}'`
-	table_name=`echo $i | awk -F '.' '{print $3}'`
+	id=$(echo $i | awk -F '.' '{print $1}')
+	schema_name=$(echo $i | awk -F '.' '{print $2}')
+	table_name=$(echo $i | awk -F '.' '{print $3}')
 	start_log
 
 	if [ "$filter" == "gpdb" ]; then
@@ -42,7 +42,7 @@ for i in $(ls $PWD/*.$filter.*.sql); do
 			DISTRIBUTED_BY="DISTRIBUTED RANDOMLY"
 		else
 			for z in $(cat $PWD/distribution.txt); do
-				table_name2=`echo $z | awk -F '|' '{print $2}'`	
+				table_name2=$(echo $z | awk -F '|' '{print $2}')
 				if [ "$table_name2" == "$table_name" ]; then
 					distribution=$(echo $z | awk -F '|' '{print $3}')
 				fi
@@ -64,9 +64,9 @@ if [ "$filter" == "gpdb" ]; then
 	for i in $(ls $PWD/*.ext_tpch.*.sql); do
 		start_log
 
-		id=`echo $i | awk -F '.' '{print $1}'`
-		schema_name=`echo $i | awk -F '.' '{print $2}'`
-		table_name=`echo $i | awk -F '.' '{print $3}'`
+		id=$(echo $i | awk -F '.' '{print $1}')
+		schema_name=$(echo $i | awk -F '.' '{print $2}')
+		table_name=$(echo $i | awk -F '.' '{print $3}')
 
 		counter=0
 		for x in $(psql -q -A -t -c "select rank() over (partition by g.hostname order by p.fselocation), g.hostname from gp_segment_configuration g join pg_filespace_entry p on g.dbid = p.fsedbid where content >= 0 order by g.hostname"); do

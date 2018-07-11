@@ -8,18 +8,6 @@ source_bashrc
 step=load
 init_log $step
 
-GEN_DATA_SCALE=$1
-EXPLAIN_ANALYZE=$2
-RANDOM_DISTRIBUTION=$3
-MULTI_USER_COUNT=$4
-SINGLE_USER_ITERATIONS=$5
-
-if [[ "$GEN_DATA_SCALE" == "" || "$EXPLAIN_ANALYZE" == "" || "$RANDOM_DISTRIBUTION" == "" || "$MULTI_USER_COUNT" == "" || "$SINGLE_USER_ITERATIONS" == "" ]]; then
-	echo "You must provide the scale as a parameter in terms of Gigabytes, true/false to run queries with EXPLAIN ANALYZE option, true/false to use random distrbution, multi-user count, and the number of sql iterations."
-	echo "Example: ./rollout.sh 100 false tpch false 5 1"
-	exit 1
-fi
-
 ADMIN_HOME=$(eval echo ~$ADMIN_USER)
 
 get_version
@@ -81,7 +69,6 @@ if [[ "$VERSION" == *"gpdb"* ]]; then
 	done
 	stop_gpfdist
 else
-
 	if [ "$PGDATA" == "" ]; then
 		echo "ERROR: Unable to determine PGDATA environment variable.  Be sure to have this set for the admin user."
 		exit 1

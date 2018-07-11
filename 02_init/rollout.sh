@@ -91,14 +91,10 @@ copy_config()
 	#gp_segment_configuration
 	psql -q -A -t -c "SELECT * FROM gp_segment_configuration" -o $PWD/../log/gp_segment_configuration.txt
 }
-set_psqlrc()
+set_search_path()
 {
-	if [ -f ~/.psqlrc ]; then
-		echo "mv ~/.psqlrc ~/.psqlrc.backup"
-		mv ~/.psqlrc ~/.psqlrc.backup
-	fi
-	echo "psql -q -A -t -c \"ALTER USER $USER SET search_path=tpch,public;\""
-	psql -q -A -t -c "ALTER USER $USER SET search_path=tpch,public;"
+	echo "psql -q -A -t -c \"ALTER USER $USER SET search_path=$schema_name,public;\""
+	psql -q -A -t -c "ALTER USER $USER SET search_path=$schema_name,public;"
 }
 
 get_version
@@ -107,7 +103,7 @@ if [[ "$VERSION" == *"gpdb"* ]]; then
 	check_gucs
 	copy_config
 fi
-set_psqlrc
+set_search_path
 
 log
 
