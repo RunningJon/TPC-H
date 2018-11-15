@@ -69,23 +69,39 @@ if [ "$filter" == "gpdb" ]; then
 		table_name=$(echo $i | awk -F '.' '{print $3}')
 
 		counter=0
-		for x in $(psql -q -A -t -c "select rank() over (partition by g.hostname order by p.fselocation), g.hostname from gp_segment_configuration g join pg_filespace_entry p on g.dbid = p.fsedbid join pg_tablespace t on t.spcfsoid = p.fsefsoid where g.content >= 0 and g.role = 'p' and t.spcname = 'pg_default' order by g.hostname"); do
-			CHILD=$(echo $x | awk -F '|' '{print $1}')
-			EXT_HOST=$(echo $x | awk -F '|' '{print $2}')
-			PORT=$(($GPFDIST_PORT + $CHILD))
+		if [ "$VERSION" == "gpdb_6" ]; then
+			for x in $(psql -q -A -t -c "select rank() over (partition by g.hostname order by g.datadir), g.hostname from gp_segment_configuration g where g.content >= 0 and g.role = 'p' order by g.hostname"); do
+				CHILD=$(echo $x | awk -F '|' '{print $1}')
+				EXT_HOST=$(echo $x | awk -F '|' '{print $2}')
+				PORT=$(($GPFDIST_PORT + $CHILD))
 
-			if [ "$counter" -eq "0" ]; then
-				LOCATION="'"
-			else
-				LOCATION+="', '"
-			fi
-			LOCATION+="gpfdist://$EXT_HOST:$PORT/""$table_name.tbl*"
+				if [ "$counter" -eq "0" ]; then
+					LOCATION="'"
+				else
+					LOCATION+="', '"
+				fi
+				LOCATION+="gpfdist://$EXT_HOST:$PORT/""$table_name.tbl*"
 
-			counter=$(($counter + 1))
-		done
+				counter=$(($counter + 1))
+			done
 
 		LOCATION+="'"
+		else
+			for x in $(psql -q -A -t -c "select rank() over (partition by g.hostname order by p.fselocation), g.hostname from gp_segment_configuration g join pg_filespace_entry p on g.dbid = p.fsedbid join pg_tablespace t on t.spcfsoid = p.fsefsoid where g.content >= 0 and g.role = 'p' and t.spcname = 'pg_default' order by g.hostname"); do
+				CHILD=$(echo $x | awk -F '|' '{print $1}')
+				EXT_HOST=$(echo $x | awk -F '|' '{print $2}')
+				PORT=$(($GPFDIST_PORT + $CHILD))
 
+				if [ "$counter" -eq "0" ]; then
+					LOCATION="'"
+				else
+					LOCATION+="', '"
+				fi
+				LOCATION+="gpfdist://$EXT_HOST:$PORT/""$table_name.tbl*"
+
+				counter=$(($counter + 1))
+			done
+		fi
 		echo "psql -q -a -P pager=off -f $i -v LOCATION=\"$LOCATION\""
 		psql -q -a -P pager=off -f $i -v LOCATION="$LOCATION" 
 
