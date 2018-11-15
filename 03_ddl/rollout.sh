@@ -84,8 +84,6 @@ if [ "$filter" == "gpdb" ]; then
 
 				counter=$(($counter + 1))
 			done
-
-		LOCATION+="'"
 		else
 			for x in $(psql -q -A -t -c "select rank() over (partition by g.hostname order by p.fselocation), g.hostname from gp_segment_configuration g join pg_filespace_entry p on g.dbid = p.fsedbid join pg_tablespace t on t.spcfsoid = p.fsefsoid where g.content >= 0 and g.role = 'p' and t.spcname = 'pg_default' order by g.hostname"); do
 				CHILD=$(echo $x | awk -F '|' '{print $1}')
@@ -102,6 +100,7 @@ if [ "$filter" == "gpdb" ]; then
 				counter=$(($counter + 1))
 			done
 		fi
+		LOCATION+="'"
 		echo "psql -q -a -P pager=off -f $i -v LOCATION=\"$LOCATION\""
 		psql -q -a -P pager=off -f $i -v LOCATION="$LOCATION" 
 
