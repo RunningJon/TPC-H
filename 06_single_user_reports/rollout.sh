@@ -19,8 +19,8 @@ else
 fi
 
 for i in $(ls $PWD/*.$filter.*.sql); do
-	echo "psql -a -f $i"
-	psql -a -f $i
+	echo "psql -v ON_ERROR_STOP=1 -a -f $i"
+	psql -v ON_ERROR_STOP=1 -a -f $i
 	echo ""
 done
 
@@ -28,32 +28,32 @@ for i in $(ls $PWD/*.copy.*.sql); do
 	logstep=$(echo $i | awk -F 'copy.' '{print $2}' | awk -F '.' '{print $1}')
 	logfile="$PWD""/../log/rollout_""$logstep"".log"
 	logfile="'""$logfile""'"
-	echo "psql -a -f $i -v LOGFILE=\"$logfile\""
-	psql -a -f $i -v LOGFILE="$logfile"
+	echo "psql -v ON_ERROR_STOP=1 -a -f $i -v LOGFILE=\"$logfile\""
+	psql -v ON_ERROR_STOP=1 -a -f $i -v LOGFILE="$logfile"
 	echo ""
 done
 
-psql -q -t -A -c "select 'analyze ' || n.nspname || '.' || c.relname || ';' from pg_class c join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'tpch_reports'" | psql -t -A -e
+psql -v ON_ERROR_STOP=1 -q -t -A -c "select 'analyze ' || n.nspname || '.' || c.relname || ';' from pg_class c join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'tpch_reports'" | psql -v ON_ERROR_STOP=1 -t -A -e
 
 echo "********************************************************************************"
 echo "Generate Data"
 echo "********************************************************************************"
-psql -F $'\t' -A -v ON_ERROR_STOP=ON -P pager=off -f $PWD/gen_data_report.sql
+psql -F $'\t' -A -v ON_ERROR_STOP=1 -P pager=off -f $PWD/gen_data_report.sql
 echo ""
 echo "********************************************************************************"
 echo "Data Loads"
 echo "********************************************************************************"
-psql -F $'\t' -A -v ON_ERROR_STOP=ON -P pager=off -f $PWD/loads_report.sql
+psql -F $'\t' -A -v ON_ERROR_STOP=1 -P pager=off -f $PWD/loads_report.sql
 echo ""
 echo "********************************************************************************"
 echo "Analyze"
 echo "********************************************************************************"
-psql -F $'\t' -A -v ON_ERROR_STOP=ON -P pager=off -f $PWD/analyze_report.sql
+psql -F $'\t' -A -v ON_ERROR_STOP=1 -P pager=off -f $PWD/analyze_report.sql
 echo ""
 echo ""
 echo "********************************************************************************"
 echo "Queries"
 echo "********************************************************************************"
-psql -F $'\t' -A -v ON_ERROR_STOP=ON -P pager=off -f $PWD/queries_report.sql
+psql -F $'\t' -A -v ON_ERROR_STOP=1 -P pager=off -f $PWD/queries_report.sql
 echo ""
 end_step $step
